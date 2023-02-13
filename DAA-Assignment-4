@@ -1,0 +1,221 @@
+1) Travelling salesman Problem
+
+Code:
+
+#include <bits/stdc++.h>
+using namespace std;
+#define V 4
+
+// implementation of traveling Salesman Problem
+int travllingSalesmanProblem(int graph[][V], int s)
+{
+	// store all vertex apart from source vertex
+	vector<int> vertex;
+	for (int i = 0; i < V; i++)
+		if (i != s)
+			vertex.push_back(i);
+
+	// store minimum weight Hamiltonian Cycle.
+	int min_path = INT_MAX;
+	do {
+
+		// store current Path weight(cost)
+		int current_pathweight = 0;
+
+		// compute current path weight
+		int k = s;
+		for (int i = 0; i < vertex.size(); i++) {
+			current_pathweight += graph[k][vertex[i]];
+			k = vertex[i];
+		}
+		current_pathweight += graph[k][s];
+
+		// update minimum
+		min_path = min(min_path, current_pathweight);
+
+	} while (
+		next_permutation(vertex.begin(), vertex.end()));
+
+	return min_path;
+}
+
+// Driver Code
+int main()
+{
+	// matrix representation of graph
+	int graph[][V] = { { 0, 10, 15, 20 },
+					{ 10, 0, 35, 25 },
+					{ 15, 35, 0, 30 },
+					{ 20, 25, 30, 0 } };
+	int s = 0;
+	cout << travllingSalesmanProblem(graph, s) << endl;
+	return 0;
+}
+
+Output
+80
+
+/**************************************************************************************************************************************************8/
+
+2)BF string Matching Algorithm
+
+Code:
+
+#include <bits/stdc++.h>
+
+void computeLPSArray(char* pat, int M, int* lps);
+
+// Prints occurrences of txt[] in pat[]
+void KMPSearch(char* pat, char* txt)
+{
+	int M = strlen(pat);
+	int N = strlen(txt);
+
+	// create lps[] that will hold the longest prefix suffix
+	// values for pattern
+	int lps[M];
+
+	// Preprocess the pattern (calculate lps[] array)
+	computeLPSArray(pat, M, lps);
+
+	int i = 0; // index for txt[]
+	int j = 0; // index for pat[]
+	while ((N - i) >= (M - j)) {
+		if (pat[j] == txt[i]) {
+			j++;
+			i++;
+		}
+
+		if (j == M) {
+			printf("Found pattern at index %d ", i - j);
+			j = lps[j - 1];
+		}
+
+		// mismatch after j matches
+		else if (i < N && pat[j] != txt[i]) {
+			// Do not match lps[0..lps[j-1]] characters,
+			// they will match anyway
+			if (j != 0)
+				j = lps[j - 1];
+			else
+				i = i + 1;
+		}
+	}
+}
+
+// Fills lps[] for given pattern pat[0..M-1]
+void computeLPSArray(char* pat, int M, int* lps)
+{
+	// length of the previous longest prefix suffix
+	int len = 0;
+
+	lps[0] = 0; // lps[0] is always 0
+
+	// the loop calculates lps[i] for i = 1 to M-1
+	int i = 1;
+	while (i < M) {
+		if (pat[i] == pat[len]) {
+			len++;
+			lps[i] = len;
+			i++;
+		}
+		else // (pat[i] != pat[len])
+		{
+			// This is tricky. Consider the example.
+			// AAACAAAA and i = 7. The idea is similar
+			// to search step.
+			if (len != 0) {
+				len = lps[len - 1];
+
+				// Also, note that we do not increment
+				// i here
+			}
+			else // if (len == 0)
+			{
+				lps[i] = 0;
+				i++;
+			}
+		}
+	}
+}
+
+// Driver code
+int main()
+{
+	char txt[] = "ABABDABACDABABCABAB";
+	char pat[] = "ABABCABAB";
+	KMPSearch(pat, txt);
+	return 0;
+}
+Output
+Found pattern at index 10 
+
+/******************************************************************************************************************************************************************/
+
+3)Exhaustive Search Algorithm
+
+Code:
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int maxPackedSets(vector<int>& items,
+				vector<set<int> >& sets)
+{
+
+int maxSets = 0;
+
+for (auto set : sets) {
+
+	int numSets = 0;
+
+	for (auto item : items) {
+	if (set.count(item)) {
+		// If the item is in the set, increment
+		// the number of sets that can be packed
+		numSets += 1;
+
+		// Remove the item from the set of items,
+		// so that it is not counted again
+		items.erase(remove(items.begin(),
+						items.end(), item),
+					items.end());
+	}
+	}
+
+	// Update the maximum number of sets that can be
+	// packed
+	maxSets = max(maxSets, numSets+1);
+}
+
+return maxSets;
+}
+
+int main()
+{
+
+// Set of items
+vector<int> items = { 1, 2, 3, 4, 5, 6 };
+
+// List of sets
+vector<set<int> > sets
+	= { { 1, 2, 3 }, { 4, 5 }, { 5, 6 }, { 1, 4 } };
+
+
+// Find the maximum number of sets that
+// can be packed into the given set of items
+int maxSets
+	= maxPackedSets(items, sets);
+
+// Print the result
+cout << "Maximum number of sets that can be packed: "
+	<< maxSets << endl;
+
+return 0;
+}
+
+Output:
+
+Maximum number of sets that can be packed: 3
+
+/******************************************************************************************************************************************************/
